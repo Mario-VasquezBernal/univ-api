@@ -134,3 +134,12 @@ model Matricula {
   @@index([alumnoId])
   @@index([cursoId])
 }
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  nombre    String?
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -9,10 +9,12 @@ import { AlumnosModule } from './alumnos/alumnos.module';
 import { CursosModule } from './cursos/cursos.module';
 import { HorariosModule } from './horarios/horarios.module';
 import { MatriculasModule } from './matriculas/matriculas.module';
+import { AuthModule } from './auth/auth.module'; // 👈 NUEVO
 
 @Module({
   imports: [
     PrismaModule,
+    AuthModule, // 👈 AÑADIDO
     CarrerasModule,
     CiclosModule,
     MateriasModule,

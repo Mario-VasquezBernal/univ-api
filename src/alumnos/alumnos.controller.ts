@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,                   // 👈 NUEVO
 } from '@nestjs/common';
 import { AlumnosService } from './alumnos.service';
 import { CreateAlumnoDto } from './dto/create-alumno.dto';
@@ -15,7 +16,9 @@ import { UpdateAlumnoDto } from './dto/update-alumno.dto';
 import { ListAlumnosQueryDto } from './dto/list-alumnos-query.dto';
 import { ok } from '../common/http-response';
 import { parsePagination } from '../common/pagination';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // 👈 NUEVO
 
+@UseGuards(JwtAuthGuard)        // 👈 Protege TODOS los endpoints de este controller
 @Controller('alumnos')
 export class AlumnosController {
   constructor(private readonly service: AlumnosService) {}
@@ -51,7 +54,6 @@ export class AlumnosController {
     return ok(true);
   }
 
-  // Subrutas derivadas
   @Get(':id/matriculas')
   async matriculas(@Param('id', ParseIntPipe) id: number) {
     return ok(await this.service.listMatriculas(id));
