@@ -1,4 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateMatriculaDto } from './create-matricula.dto';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 
-export class UpdateMatriculaDto extends PartialType(CreateMatriculaDto) {}
+export class UpdateMatriculaDto {
+  @IsOptional() @IsString() @IsIn(['ACTIVA','RETIRADA','APROBADA','REPROBADA'])
+  estado?: string;
+}

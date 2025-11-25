@@ -1,31 +1,23 @@
-import { IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
-
-// Enum local para desacoplar de Prisma
-export enum TurnoDto {
-  MATUTINO = 'MATUTINO',
-  VESPERTINO = 'VESPERTINO',
-  NOCTURNO = 'NOCTURNO',
-}
+import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateCursoDto {
-  @IsInt()
+  @Type(() => Number) @IsInt() @Min(1)
   materiaId: number;
 
-  @IsInt()
+  @Type(() => Number) @IsInt() @Min(1)
   profesorId: number;
 
-  @IsString()
-  @IsNotEmpty()
-  seccion: string; // "A", "B", etc.
+  @IsString() @IsNotEmpty()
+  seccion: string; // p.ej. "A", "B", "N1"
 
-  @IsEnum(TurnoDto)
-  turno: TurnoDto;
+  @IsString() @IsIn(['MATUTINO', 'VESPERTINO', 'NOCTURNO'])
+  turno: 'MATUTINO' | 'VESPERTINO' | 'NOCTURNO';
 
-  @IsInt()
-  @Min(1)
-  cupo: number;
-
+  @Type(() => Number) @IsInt() @Min(1)
   @IsOptional()
-  @IsBoolean()
-  activo?: boolean;
+  cupo?: number = 40;
+
+  @IsOptional() @IsBoolean()
+  activo?: boolean = true;
 }

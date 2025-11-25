@@ -1,8 +1,15 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class createProfesorDto {
-  @IsString() nombres: string;
-  @IsString() apellidos: string;
-  @IsEmail() email: string;
-  @IsOptional() @IsString() titulo?: string;
+export class CreateProfesorDto {
+  @IsString() @IsNotEmpty()
+  nombres: string;
+
+  @IsString() @IsNotEmpty()
+  apellidos: string;
+
+  @IsEmail()
+  email: string; // único
+
+  @IsOptional() @IsString()
+  titulo?: string; // opcional
 }

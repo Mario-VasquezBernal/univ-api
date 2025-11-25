@@ -1,8 +1,9 @@
-import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateAlumnoDto {
   @IsString() @IsNotEmpty()
-  dni: string;
+  dni: string; // único
 
   @IsString() @IsNotEmpty()
   nombres: string;
@@ -11,11 +12,11 @@ export class CreateAlumnoDto {
   apellidos: string;
 
   @IsEmail()
-  email: string;
+  email: string; // único
 
   @IsOptional() @IsPhoneNumber('EC')
   telefono?: string;
 
-  @IsInt()
+  @Type(() => Number) @IsInt() @Min(1)
   carreraId: number;
 }

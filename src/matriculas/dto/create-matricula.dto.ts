@@ -1,7 +1,10 @@
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { IsInt } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateMatriculaDto {
-  @IsInt() alumnoId: number;
-  @IsInt() cursoId: number;
-  @IsOptional() @IsString() estado?: string; // ACTIVA por defecto
+  @Type(() => Number) @IsInt()
+  alumnoId: number;
+
+  @Type(() => Number) @IsInt()
+  cursoId: number;
 }

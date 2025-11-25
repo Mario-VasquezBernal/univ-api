@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Body, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, ParseIntPipe, Patch, Delete } from '@nestjs/common';
 import { HorariosService } from './horarios.service';
 import { CreateHorarioDto } from './dto/create-horario.dto';
+import { UpdateHorarioDto } from './dto/update-horario.dto';
+import { ListHorariosQueryDto } from './dto/list-horarios-query.dto';
 import { parsePagination } from '../common/pagination';
 import { ok } from '../common/http-response';
 
@@ -9,9 +11,9 @@ export class HorariosController {
   constructor(private readonly service: HorariosService) {}
 
   @Get()
-  async list(@Query() query: any) {
-    const { skip, limit, page } = parsePagination(query);
-    const { items, total } = await this.service.findAll(skip, limit);
+  async list(@Query() q: ListHorariosQueryDto) {
+    const { skip, limit, page } = parsePagination(q);
+    const { items, total } = await this.service.findAll(skip, limit, q);
     return ok(items, { page, limit, total });
   }
 
@@ -23,5 +25,16 @@ export class HorariosController {
   @Post()
   async create(@Body() dto: CreateHorarioDto) {
     return ok(await this.service.create(dto));
+  }
+
+  @Patch(':id')
+  async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateHorarioDto) {
+    return ok(await this.service.update(id, dto));
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.service.remove(id);
+    return ok(true);
   }
 }
