@@ -6,33 +6,21 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Iniciando seed...');
 
-  // ================================
   // 1. Carrera
-  // ================================
   const carrera = await prisma.carrera.upsert({
     where: { codigo: 'INF' },
     update: {},
-    create: {
-      nombre: 'Ingeniería Informática',
-      codigo: 'INF',
-    },
+    create: { nombre: 'Ingeniería Informática', codigo: 'INF' },
   });
 
-  // ================================
   // 2. Ciclo
-  // ================================
   const ciclo = await prisma.ciclo.upsert({
     where: { numero: 1 },
     update: {},
-    create: {
-      numero: 1,
-      nombre: 'Primer ciclo',
-    },
+    create: { numero: 1, nombre: 'Primer ciclo' },
   });
 
-  // ================================
   // 3. Materia
-  // ================================
   const materia = await prisma.materia.upsert({
     where: { codigo: 'PROG1' },
     update: {},
@@ -46,9 +34,7 @@ async function main() {
     },
   });
 
-  // ================================
   // 4. Profesor
-  // ================================
   const profesor = await prisma.profesor.upsert({
     where: { email: 'prof@uni.edu' },
     update: {},
@@ -59,11 +45,20 @@ async function main() {
     },
   });
 
-  // ================================
-  // 5. Curso
-  // ================================
-  const curso = await prisma.curso.create({
-    data: {
+  // 5. Curso (usar upsert con la clave compuesta materiaId+seccion)
+  const curso = await prisma.curso.upsert({
+    where: {
+      materiaId_seccion: {
+        materiaId: materia.id,
+        seccion: 'A',
+      },
+    },
+    update: {
+      profesorId: profesor.id,
+      turno: Turno.MATUTINO,
+      cupo: 2,
+    },
+    create: {
       materiaId: materia.id,
       profesorId: profesor.id,
       seccion: 'A',
@@ -72,9 +67,7 @@ async function main() {
     },
   });
 
-  // ================================
-  // 6. Horarios
-  // ================================
+  // 6. Horarios (createMany con skipDuplicates ya está bien)
   await prisma.horario.createMany({
     data: [
       {
@@ -95,11 +88,16 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // ================================
-  // 7. Alumnos
-  // ================================
-  const al1 = await prisma.alumno.create({
-    data: {
+  // 7. Alumnos (también upsert, para evitar problemas de unique en dni/email)
+  const al1 = await prisma.alumno.upsert({
+    where: { dni: '01010101' },
+    update: {
+      nombres: 'Alan',
+      apellidos: 'Turing',
+      email: 'alan@uni.edu',
+      carreraId: carrera.id,
+    },
+    create: {
       dni: '01010101',
       nombres: 'Alan',
       apellidos: 'Turing',
@@ -108,8 +106,15 @@ async function main() {
     },
   });
 
-  const al2 = await prisma.alumno.create({
-    data: {
+  const al2 = await prisma.alumno.upsert({
+    where: { dni: '02020202' },
+    update: {
+      nombres: 'Grace',
+      apellidos: 'Hopper',
+      email: 'grace@uni.edu',
+      carreraId: carrera.id,
+    },
+    create: {
       dni: '02020202',
       nombres: 'Grace',
       apellidos: 'Hopper',
@@ -118,9 +123,7 @@ async function main() {
     },
   });
 
-  // ================================
-  // 8. Usuario (para Auth)
-  // ================================
+  // 8. Usuario para login (admin)
   const hashedPassword = await bcrypt.hash('admin123', 10);
 
   const usuario = await prisma.usuario.upsert({
@@ -144,7 +147,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error('❌ Error en seed:', e);
     process.exit(1);
   })
   .finally(async () => {
