@@ -1,114 +1,95 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaProfesoresService } from '../prisma/prisma-profesores.service';
 import { CreateProfesorDto } from './dto/create-profesor.dto';
 import { UpdateProfesorDto } from './dto/update-profesor.dto';
+import { Profesor, Prisma } from '@prisma/client-profesores';
+import { PaginatedResponse } from '../common/interfaces/http-response.interface';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ProfesoresService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaProfesoresService) {}
 
-  private defaultInclude = {
-    // Traemos conteo de cursos para vistas rápidas
-    _count: { select: { cursos: true } },
-  } as const;
+  async create(createProfesorDto: CreateProfesorDto): Promise<Profesor> {
+    const data: Prisma.ProfesorCreateInput = {
+      nombres: createProfesorDto.nombres,
+      apellidos: createProfesorDto.apellidos,
+      email: createProfesorDto.email,
+      telefono: createProfesorDto.telefono,
+      titulo: createProfesorDto.titulo,
+    };
 
-  async findAll(skip: number, take: number, q: any) {
-    const where: any = {};
-    if (q.nombres)   where.nombres   = { contains: q.nombres,   mode: 'insensitive' };
-    if (q.apellidos) where.apellidos = { contains: q.apellidos, mode: 'insensitive' };
-    if (q.email)     where.email     = { contains: q.email,     mode: 'insensitive' };
+    if (createProfesorDto.password) {
+      data.password = await bcrypt.hash(createProfesorDto.password, 10);
+    }
 
-    const [items, total] = await this.prisma.$transaction([
+    return this.prisma.profesor.create({ data });
+  }
+
+  async findAll(page = 1, limit = 10): Promise<PaginatedResponse<Profesor>> {
+    const skip = (page - 1) * limit;
+
+    const [profesores, total] = await Promise.all([
       this.prisma.profesor.findMany({
-        where,
         skip,
-        take,
-        include: this.defaultInclude,
-        orderBy: { id: 'desc' },
+        take: limit,
+        include: { titulos: true },
+        orderBy: { id: 'asc' },
       }),
-      this.prisma.profesor.count({ where }),
+      this.prisma.profesor.count(),
     ]);
-    return { items, total };
+
+    return {
+      ok: true,
+      data: profesores,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
-  async findOne(id: number) {
-    const item = await this.prisma.profesor.findUnique({
+  async findOne(id: number): Promise<Profesor> {
+    const profesor = await this.prisma.profesor.findUnique({
       where: { id },
-      include: this.defaultInclude,
+      include: { titulos: true },
     });
-    if (!item) throw new NotFoundException('Profesor no encontrado');
-    return item;
-  }
 
-  async create(dto: CreateProfesorDto) {
-    try {
-      return await this.prisma.profesor.create({
-        data: dto,
-        include: this.defaultInclude,
-      });
-    } catch (e: any) {
-      if (e.code === 'P2002') {
-        // unique: email
-        throw new BadRequestException('Ya existe un profesor con ese email.');
-      }
-      throw e;
-    }
-  }
-
-  async update(id: number, dto: UpdateProfesorDto) {
-    await this.ensureExists(id);
-    try {
-      return await this.prisma.profesor.update({
-        where: { id },
-        data: dto,
-        include: this.defaultInclude,
-      });
-    } catch (e: any) {
-      if (e.code === 'P2002') {
-        throw new BadRequestException('Ya existe un profesor con ese email.');
-      }
-      throw e;
-    }
-  }
-
-  async remove(id: number) {
-    await this.ensureExists(id);
-
-    // (Opcional) bloquear si tiene cursos activos
-    const cursos = await this.prisma.curso.count({ where: { profesorId: id } });
-    if (cursos > 0) {
-      throw new BadRequestException('No se puede eliminar: el profesor tiene cursos asignados.');
+    if (!profesor) {
+      throw new NotFoundException(`Profesor con ID ${id} no encontrado`);
     }
 
-    await this.prisma.profesor.delete({ where: { id } });
-    return true;
+    return profesor;
   }
 
-  // Subrecursos
-  async listCursos(id: number) {
-    await this.ensureExists(id);
-    return this.prisma.curso.findMany({
-      where: { profesorId: id },
-      include: { materia: true, horarios: true },
-      orderBy: { id: 'desc' },
+  async update(id: number, updateProfesorDto: UpdateProfesorDto): Promise<Profesor> {
+    await this.findOne(id);
+
+    const data: Prisma.ProfesorUpdateInput = {
+      nombres: updateProfesorDto.nombres,
+      apellidos: updateProfesorDto.apellidos,
+      email: updateProfesorDto.email,
+      telefono: updateProfesorDto.telefono,
+      titulo: updateProfesorDto.titulo,
+    };
+
+    if (updateProfesorDto.password) {
+      data.password = await bcrypt.hash(updateProfesorDto.password, 10);
+    }
+
+    return this.prisma.profesor.update({
+      where: { id },
+      data,
     });
   }
 
-  async agendaSemanal(id: number) {
-    await this.ensureExists(id);
-    return this.prisma.horario.findMany({
-      where: { curso: { profesorId: id } },
-      include: { curso: { include: { materia: true } } },
-      orderBy: [{ dia: 'asc' }, { horaInicio: 'asc' }],
-    });
-  }
+  async remove(id: number): Promise<Profesor> {
+    await this.findOne(id);
 
-  private async ensureExists(id: number) {
-    const found = await this.prisma.profesor.findUnique({ where: { id } });
-    if (!found) throw new NotFoundException('Profesor no encontrado');
+    return this.prisma.profesor.delete({
+      where: { id },
+    });
   }
 }

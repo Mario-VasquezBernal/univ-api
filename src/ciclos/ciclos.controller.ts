@@ -1,53 +1,77 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
-  ParseIntPipe,
-  Patch,
   Post,
-  Query,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CiclosService } from './ciclos.service';
 import { CreateCicloDto } from './dto/create-ciclo.dto';
 import { UpdateCicloDto } from './dto/update-ciclo.dto';
-import { ListCiclosQueryDto } from './dto/list-ciclos-query.dto';
-import { parsePagination } from '../common/pagination';
-import { ok } from '../common/http-response';
+import { Ciclo } from '@prisma/client-carreras';
+import { HttpResponse, PaginatedResponse } from '../common/interfaces/http-response.interface';
 
 @Controller('ciclos')
 export class CiclosController {
   constructor(private readonly service: CiclosService) {}
 
+  @Post()
+  async create(@Body() createCicloDto: CreateCicloDto): Promise<HttpResponse<Ciclo>> {
+    const ciclo = await this.service.create(createCicloDto);
+    return {
+      ok: true,
+      data: ciclo,
+      message: 'Ciclo creado exitosamente',
+    };
+  }
+
   @Get()
-  async list(@Query() q: ListCiclosQueryDto) {
-    const { page, limit, skip } = parsePagination(q);
-    const { items, total } = await this.service.findAll(skip, limit, q);
-    return ok(items, { page, limit, total });
+  async findAll(): Promise<PaginatedResponse<Ciclo>> {
+    const result = await this.service.findAll();
+    return {
+      ok: true,
+      data: result.items,
+      meta: {
+        total: result.total,
+        page: 1,
+        limit: result.total,
+        totalPages: 1,
+      },
+    };
   }
 
   @Get(':id')
-  async get(@Param('id', ParseIntPipe) id: number) {
-    return ok(await this.service.findOne(id));
-  }
-
-  @Post()
-  async create(@Body() dto: CreateCicloDto) {
-    return ok(await this.service.create(dto));
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<HttpResponse<Ciclo>> {
+    const ciclo = await this.service.findOne(id);
+    return {
+      ok: true,
+      data: ciclo,
+    };
   }
 
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateCicloDto,
-  ) {
-    return ok(await this.service.update(id, dto));
+    @Body() updateCicloDto: UpdateCicloDto,
+  ): Promise<HttpResponse<Ciclo>> {
+    const ciclo = await this.service.update(id, updateCicloDto);
+    return {
+      ok: true,
+      data: ciclo,
+      message: 'Ciclo actualizado exitosamente',
+    };
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    await this.service.remove(id);
-    return ok(true);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<HttpResponse<Ciclo>> {
+    const ciclo = await this.service.remove(id);
+    return {
+      ok: true,
+      data: ciclo,
+      message: 'Ciclo eliminado exitosamente',
+    };
   }
 }

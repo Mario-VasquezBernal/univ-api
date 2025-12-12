@@ -1,23 +1,37 @@
-import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
+enum Turno {
+  MATUTINO = 'MATUTINO',
+  VESPERTINO = 'VESPERTINO',
+  NOCTURNO = 'NOCTURNO',
+}
+
 export class CreateCursoDto {
-  @Type(() => Number) @IsInt() @Min(1)
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   materiaId: number;
 
-  @Type(() => Number) @IsInt() @Min(1)
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   profesorId: number;
 
-  @IsString() @IsNotEmpty()
-  seccion: string; // p.ej. "A", "B", "N1"
+  @IsString()
+  @IsNotEmpty()
+  seccion: string;
 
-  @IsString() @IsIn(['MATUTINO', 'VESPERTINO', 'NOCTURNO'])
-  turno: 'MATUTINO' | 'VESPERTINO' | 'NOCTURNO';
+  @IsEnum(Turno)
+  turno: Turno;
 
-  @Type(() => Number) @IsInt() @Min(1)
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   @IsOptional()
   cupo?: number = 40;
 
-  @IsOptional() @IsBoolean()
+  @IsOptional()
+  @IsBoolean()
   activo?: boolean = true;
 }

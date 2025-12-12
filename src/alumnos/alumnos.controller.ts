@@ -1,66 +1,70 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  Param,
-  ParseIntPipe,
-  Patch,
   Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
   Query,
-  UseGuards,                   // 👈 NUEVO
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AlumnosService } from './alumnos.service';
 import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { UpdateAlumnoDto } from './dto/update-alumno.dto';
 import { ListAlumnosQueryDto } from './dto/list-alumnos-query.dto';
-import { ok } from '../common/http-response';
-import { parsePagination } from '../common/pagination';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // 👈 NUEVO
+import { Alumno } from '@prisma/client-carreras';
+import { HttpResponse, PaginatedResponse } from '../common/interfaces/http-response.interface';
 
-@UseGuards(JwtAuthGuard)        // 👈 Protege TODOS los endpoints de este controller
 @Controller('alumnos')
 export class AlumnosController {
   constructor(private readonly service: AlumnosService) {}
 
+  @Post()
+  async create(@Body() createAlumnoDto: CreateAlumnoDto): Promise<HttpResponse<Alumno>> {
+    const alumno = await this.service.create(createAlumnoDto);
+    return {
+      ok: true,
+      data: alumno,
+      message: 'Alumno creado exitosamente',
+    };
+  }
+
   @Get()
-  async list(@Query() q: ListAlumnosQueryDto) {
-    const { page, limit, skip } = parsePagination(q);
-    const { items, total } = await this.service.findAll(skip, limit, q);
-    return ok(items, { page, limit, total });
+  async findAll(@Query() query: ListAlumnosQueryDto): Promise<PaginatedResponse<Alumno>> {
+    const { page = 1, limit = 10, carreraId } = query;
+    return this.service.findAll(page, limit, carreraId);
   }
 
   @Get(':id')
-  async get(@Param('id', ParseIntPipe) id: number) {
-    return ok(await this.service.findOne(id));
-  }
-
-  @Post()
-  async create(@Body() dto: CreateAlumnoDto) {
-    return ok(await this.service.create(dto));
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<HttpResponse<Alumno>> {
+    const alumno = await this.service.findOne(id);
+    return {
+      ok: true,
+      data: alumno,
+    };
   }
 
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateAlumnoDto,
-  ) {
-    return ok(await this.service.update(id, dto));
+    @Body() updateAlumnoDto: UpdateAlumnoDto,
+  ): Promise<HttpResponse<Alumno>> {
+    const alumno = await this.service.update(id, updateAlumnoDto);
+    return {
+      ok: true,
+      data: alumno,
+      message: 'Alumno actualizado exitosamente',
+    };
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    await this.service.remove(id);
-    return ok(true);
-  }
-
-  @Get(':id/matriculas')
-  async matriculas(@Param('id', ParseIntPipe) id: number) {
-    return ok(await this.service.listMatriculas(id));
-  }
-
-  @Get(':id/horario')
-  async agenda(@Param('id', ParseIntPipe) id: number) {
-    return ok(await this.service.agendaSemanal(id));
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<HttpResponse<Alumno>> {
+    const alumno = await this.service.remove(id);
+    return {
+      ok: true,
+      data: alumno,
+      message: 'Alumno eliminado exitosamente',
+    };
   }
 }

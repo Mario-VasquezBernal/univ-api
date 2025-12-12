@@ -11,10 +11,7 @@ CREATE TABLE "Alumno" (
     "nombres" TEXT NOT NULL,
     "apellidos" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "telefono" TEXT,
     "carreraId" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Alumno_pkey" PRIMARY KEY ("id")
 );
@@ -43,7 +40,6 @@ CREATE TABLE "Materia" (
     "nombre" TEXT NOT NULL,
     "codigo" TEXT NOT NULL,
     "creditos" INTEGER NOT NULL,
-    "horas" INTEGER NOT NULL,
     "carreraId" INTEGER NOT NULL,
     "cicloId" INTEGER NOT NULL,
 
@@ -51,25 +47,12 @@ CREATE TABLE "Materia" (
 );
 
 -- CreateTable
-CREATE TABLE "Profesor" (
-    "id" SERIAL NOT NULL,
-    "nombres" TEXT NOT NULL,
-    "apellidos" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "titulo" TEXT,
-
-    CONSTRAINT "Profesor_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Curso" (
     "id" SERIAL NOT NULL,
     "materiaId" INTEGER NOT NULL,
-    "profesorId" INTEGER NOT NULL,
     "seccion" TEXT NOT NULL,
     "turno" "Turno" NOT NULL,
-    "cupo" INTEGER NOT NULL DEFAULT 40,
-    "activo" BOOLEAN NOT NULL DEFAULT true,
+    "profesorId" INTEGER NOT NULL,
 
     CONSTRAINT "Curso_pkey" PRIMARY KEY ("id")
 );
@@ -104,9 +87,6 @@ CREATE UNIQUE INDEX "Alumno_dni_key" ON "Alumno"("dni");
 CREATE UNIQUE INDEX "Alumno_email_key" ON "Alumno"("email");
 
 -- CreateIndex
-CREATE INDEX "Alumno_carreraId_idx" ON "Alumno"("carreraId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Carrera_codigo_key" ON "Carrera"("codigo");
 
 -- CreateIndex
@@ -114,36 +94,6 @@ CREATE UNIQUE INDEX "Ciclo_numero_key" ON "Ciclo"("numero");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Materia_codigo_key" ON "Materia"("codigo");
-
--- CreateIndex
-CREATE INDEX "Materia_carreraId_idx" ON "Materia"("carreraId");
-
--- CreateIndex
-CREATE INDEX "Materia_cicloId_idx" ON "Materia"("cicloId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Profesor_email_key" ON "Profesor"("email");
-
--- CreateIndex
-CREATE INDEX "Curso_materiaId_idx" ON "Curso"("materiaId");
-
--- CreateIndex
-CREATE INDEX "Curso_profesorId_idx" ON "Curso"("profesorId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Curso_materiaId_seccion_key" ON "Curso"("materiaId", "seccion");
-
--- CreateIndex
-CREATE INDEX "Horario_cursoId_idx" ON "Horario"("cursoId");
-
--- CreateIndex
-CREATE INDEX "Matricula_alumnoId_idx" ON "Matricula"("alumnoId");
-
--- CreateIndex
-CREATE INDEX "Matricula_cursoId_idx" ON "Matricula"("cursoId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Matricula_alumnoId_cursoId_key" ON "Matricula"("alumnoId", "cursoId");
 
 -- AddForeignKey
 ALTER TABLE "Alumno" ADD CONSTRAINT "Alumno_carreraId_fkey" FOREIGN KEY ("carreraId") REFERENCES "Carrera"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -156,9 +106,6 @@ ALTER TABLE "Materia" ADD CONSTRAINT "Materia_cicloId_fkey" FOREIGN KEY ("cicloI
 
 -- AddForeignKey
 ALTER TABLE "Curso" ADD CONSTRAINT "Curso_materiaId_fkey" FOREIGN KEY ("materiaId") REFERENCES "Materia"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Curso" ADD CONSTRAINT "Curso_profesorId_fkey" FOREIGN KEY ("profesorId") REFERENCES "Profesor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Horario" ADD CONSTRAINT "Horario_cursoId_fkey" FOREIGN KEY ("cursoId") REFERENCES "Curso"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

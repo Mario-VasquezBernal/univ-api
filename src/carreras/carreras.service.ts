@@ -1,86 +1,70 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaCarrerasService } from '../prisma/prisma-carreras.service';
 import { CreateCarreraDto } from './dto/create-carrera.dto';
 import { UpdateCarreraDto } from './dto/update-carrera.dto';
+import { Carrera } from '@prisma/client-carreras';
+import { PaginatedResponse } from '../common/interfaces/http-response.interface';
 
 @Injectable()
 export class CarrerasService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaCarrerasService) {}
 
-  private defaultInclude = {
-    // evita traer TODOS los alumnos completos si es pesado:
-    alumnos: { select: { id: true } },
-    materias: { select: { id: true, nombre: true, codigo: true } },
-  } as const;
-
-  async findAll(skip: number, take: number, where: Prisma.CarreraWhereInput = {}) {
-    const [items, total] = await this.prisma.$transaction([
-      this.prisma.carrera.findMany({
-        where,
-        skip,
-        take,
-        include: this.defaultInclude,
-        orderBy: { id: 'desc' },
-      }),
-      this.prisma.carrera.count({ where }),
-    ]);
-    return { items, total };
+  async create(createCarreraDto: CreateCarreraDto): Promise<Carrera> {
+    return this.prisma.carrera.create({
+      data: createCarreraDto,
+    });
   }
 
-  async findOne(id: number) {
+  async findAll(page = 1, limit = 10): Promise<PaginatedResponse<Carrera>> {
+    const skip = (page - 1) * limit;
+
+    const [carreras, total] = await Promise.all([
+      this.prisma.carrera.findMany({
+        skip,
+        take: limit,
+        orderBy: { id: 'asc' },
+      }),
+      this.prisma.carrera.count(),
+    ]);
+
+    return {
+      ok: true,
+      data: carreras,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async findOne(id: number): Promise<Carrera> {
     const carrera = await this.prisma.carrera.findUnique({
       where: { id },
-      include: this.defaultInclude,
     });
-    if (!carrera) throw new NotFoundException('Carrera no encontrada');
+
+    if (!carrera) {
+      throw new NotFoundException(`Carrera con ID ${id} no encontrada`);
+    }
+
     return carrera;
   }
 
-  async create(dto: CreateCarreraDto) {
-    try {
-      return await this.prisma.carrera.create({
-        data: dto,
-        include: this.defaultInclude,
-      });
-    } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002') {
-        // campo único duplicado (probable: codigo)
-        throw new BadRequestException('Ya existe una carrera con ese código.');
-      }
-      throw e;
-    }
+  async update(id: number, updateCarreraDto: UpdateCarreraDto): Promise<Carrera> {
+    await this.findOne(id);
+
+    return this.prisma.carrera.update({
+      where: { id },
+      data: updateCarreraDto,
+    });
   }
 
-  async update(id: number, dto: UpdateCarreraDto) {
-    await this.ensureExists(id);
-    try {
-      return await this.prisma.carrera.update({
-        where: { id },
-        data: dto,
-        include: this.defaultInclude,
-      });
-    } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2002') {
-        throw new BadRequestException('Ya existe una carrera con ese código.');
-      }
-      throw e;
-    }
-  }
+  async remove(id: number): Promise<Carrera> {
+    await this.findOne(id);
 
-  async remove(id: number) {
-    await this.ensureExists(id);
-    await this.prisma.carrera.delete({ where: { id } });
-    return true;
-  }
-
-  private async ensureExists(id: number) {
-    const found = await this.prisma.carrera.findUnique({ where: { id } });
-    if (!found) throw new NotFoundException('Carrera no encontrada');
+    return this.prisma.carrera.delete({
+      where: { id },
+    });
   }
 }

@@ -1,15 +1,24 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsString, IsEmail, IsOptional } from 'class-validator';
 
 export class CreateProfesorDto {
-  @IsString() @IsNotEmpty()
+  @IsString()
   nombres: string;
 
-  @IsString() @IsNotEmpty()
+  @IsString()
   apellidos: string;
 
   @IsEmail()
-  email: string; // único
+  email: string;
 
-  @IsOptional() @IsString()
-  titulo?: string; // opcional
+  @IsString()
+  @IsOptional()
+  telefono?: string;
+
+  @IsString()
+  @IsOptional()
+  titulo?: string;
+
+  @IsString()
+  @IsOptional()
+  password?: string;
 }

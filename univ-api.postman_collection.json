@@ -1,0 +1,822 @@
+{
+  "info": {
+    "name": "Sistema de Matrículas - UNIV API",
+    "description": "Colección completa de endpoints para el sistema universitario",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Autenticación",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.token) {",
+                  "        pm.collectionVariables.set('token', jsonData.data.token);",
+                  "        pm.environment.set('token', jsonData.data.token);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@univ.ec\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍🎓 Alumnos",
+      "item": [
+        {
+          "name": "Listar Alumnos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alumnos",
+              "host": ["{{baseUrl}}"],
+              "path": ["alumnos"]
+            }
+          }
+        },
+        {
+          "name": "Listar Alumnos (Paginado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alumnos?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["alumnos"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Carrera",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alumnos?carreraId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["alumnos"],
+              "query": [
+                {
+                  "key": "carreraId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Alumno por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alumnos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["alumnos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Crear Alumno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"03030303\",\n  \"nombres\": \"Carlos\",\n  \"apellidos\": \"Pérez\",\n  \"email\": \"carlos@uni.edu\",\n  \"telefono\": \"0999888777\",\n  \"carreraId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alumnos",
+              "host": ["{{baseUrl}}"],
+              "path": ["alumnos"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Alumno",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"0987654321\",\n  \"email\": \"carlos.perez@uni.edu\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alumnos/3",
+              "host": ["{{baseUrl}}"],
+              "path": ["alumnos", "3"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Alumno",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alumnos/3",
+              "host": ["{{baseUrl}}"],
+              "path": ["alumnos", "3"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📚 Carreras",
+      "item": [
+        {
+          "name": "Listar Carreras",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carreras",
+              "host": ["{{baseUrl}}"],
+              "path": ["carreras"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Carrera por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carreras/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["carreras", "1"]
+            }
+          }
+        },
+        {
+          "name": "Crear Carrera",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ingeniería de Sistemas\",\n  \"codigo\": \"SIS\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/carreras",
+              "host": ["{{baseUrl}}"],
+              "path": ["carreras"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Carrera",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ingeniería Informática - Actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/carreras/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["carreras", "1"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Carrera",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/carreras/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["carreras", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📖 Materias",
+      "item": [
+        {
+          "name": "Listar Materias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materias",
+              "host": ["{{baseUrl}}"],
+              "path": ["materias"]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Carrera",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materias?carreraId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["materias"],
+              "query": [
+                {
+                  "key": "carreraId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Ciclo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materias?cicloId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["materias"],
+              "query": [
+                {
+                  "key": "cicloId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Materia por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materias/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["materias", "1"]
+            }
+          }
+        },
+        {
+          "name": "Crear Materia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Matemáticas I\",\n  \"codigo\": \"MAT1\",\n  \"creditos\": 4,\n  \"horas\": 64,\n  \"carreraId\": 1,\n  \"cicloId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/materias",
+              "host": ["{{baseUrl}}"],
+              "path": ["materias"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Materia",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"creditos\": 5,\n  \"horas\": 80\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/materias/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["materias", "1"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Materia",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materias/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["materias", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍🏫 Profesores",
+      "item": [
+        {
+          "name": "Listar Profesores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/profesores",
+              "host": ["{{baseUrl}}"],
+              "path": ["profesores"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Profesor por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/profesores/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["profesores", "1"]
+            }
+          }
+        },
+        {
+          "name": "Crear Profesor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"María\",\n  \"apellidos\": \"García\",\n  \"email\": \"maria@uni.edu\",\n  \"titulo\": \"PhD en Computación\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/profesores",
+              "host": ["{{baseUrl}}"],
+              "path": ["profesores"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📅 Cursos",
+      "item": [
+        {
+          "name": "Listar Cursos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cursos",
+              "host": ["{{baseUrl}}"],
+              "path": ["cursos"]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Materia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cursos?materiaId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cursos"],
+              "query": [
+                {
+                  "key": "materiaId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Profesor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cursos?profesorId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cursos"],
+              "query": [
+                {
+                  "key": "profesorId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Curso Completo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cursos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cursos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Crear Curso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"materiaId\": 1,\n  \"profesorId\": 1,\n  \"seccion\": \"B\",\n  \"turno\": \"VESPERTINO\",\n  \"cupo\": 35\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cursos",
+              "host": ["{{baseUrl}}"],
+              "path": ["cursos"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Curso",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cupo\": 40,\n  \"activo\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cursos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["cursos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Curso",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cursos/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["cursos", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🕐 Horarios",
+      "item": [
+        {
+          "name": "Listar Horarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/horarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["horarios"]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Curso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/horarios?cursoId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["horarios"],
+              "query": [
+                {
+                  "key": "cursoId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Horario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cursoId\": 1,\n  \"dia\": \"VIERNES\",\n  \"horaInicio\": \"14:00\",\n  \"horaFin\": \"16:00\",\n  \"aula\": \"202\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/horarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["horarios"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📝 Matrículas",
+      "item": [
+        {
+          "name": "Listar Matrículas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/matriculas",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas"]
+            }
+          }
+        },
+        {
+          "name": "Listar con Paginación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/matriculas?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Alumno",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/matriculas?alumnoId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas"],
+              "query": [
+                {
+                  "key": "alumnoId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Curso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/matriculas?cursoId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas"],
+              "query": [
+                {
+                  "key": "cursoId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filtrar por Estado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/matriculas?estado=ACTIVA",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas"],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "ACTIVA"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Matrícula por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/matriculas/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Crear Matrícula",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumnoId\": 2,\n  \"cursoId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/matriculas",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar Matrícula",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"APROBADA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/matriculas/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Matrícula",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/matriculas/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["matriculas", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔄 Ciclos",
+      "item": [
+        {
+          "name": "Listar Ciclos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ciclos",
+              "host": ["{{baseUrl}}"],
+              "path": ["ciclos"]
+            }
+          }
+        },
+        {
+          "name": "Obtener Ciclo por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ciclos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["ciclos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Crear Ciclo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": 2,\n  \"nombre\": \"Segundo ciclo\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ciclos",
+              "host": ["{{baseUrl}}"],
+              "path": ["ciclos"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

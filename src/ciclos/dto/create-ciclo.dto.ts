@@ -1,10 +1,11 @@
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsNotEmpty, IsString, IsInt, Min } from 'class-validator';
 
 export class CreateCicloDto {
-  @Type(() => Number) @IsInt() @Min(1)
-  numero: number; // único (@@unique en Prisma)
+  @IsString()
+  @IsNotEmpty()
+  nombre: string;
 
-  @IsOptional() @IsString()
-  nombre?: string; // opcional: "Primer ciclo", etc.
+  @IsInt()
+  @Min(1)
+  numero: number;
 }

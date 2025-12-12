@@ -1,22 +1,36 @@
-import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Min } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateAlumnoDto {
-  @IsString() @IsNotEmpty()
+  @IsString()
+  @IsNotEmpty()
   dni: string; // único
 
-  @IsString() @IsNotEmpty()
+  @IsString()
+  @IsNotEmpty()
   nombres: string;
 
-  @IsString() @IsNotEmpty()
+  @IsString()
+  @IsNotEmpty()
   apellidos: string;
 
   @IsEmail()
   email: string; // único
 
-  @IsOptional() @IsPhoneNumber('EC')
+  @IsOptional()
+  @IsPhoneNumber('EC')
   telefono?: string;
 
-  @Type(() => Number) @IsInt() @Min(1)
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   carreraId: number;
 }

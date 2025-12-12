@@ -1,12 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/require-await */
 import { ExtractJwt, Strategy } from 'passport-jwt';
-
-export interface JwtPayload {
-  sub: number;
-  email: string;
-  role: string;
-}
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -14,16 +9,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      // damos un valor por defecto para que nunca sea undefined
-      secretOrKey: process.env.JWT_SECRET || 'univ_api_default_secret',
+      secretOrKey: process.env.JWT_SECRET || 'secretKey',
     });
   }
 
-  async validate(payload: JwtPayload) {
-    return {
-      userId: payload.sub,
-      email: payload.email,
-      role: payload.role,
-    };
+  async validate(payload: validation) {
+    return { email: payload.email, role: payload.role };
   }
+}
+interface validation {
+  email
+  role
 }

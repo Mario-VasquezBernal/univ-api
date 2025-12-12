@@ -1,43 +1,64 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
 import { CarrerasService } from './carreras.service';
 import { CreateCarreraDto } from './dto/create-carrera.dto';
 import { UpdateCarreraDto } from './dto/update-carrera.dto';
-import { ListCarrerasQueryDto } from './dto/list-carreras.query.dto';
-import { ok } from '../common/http-response';
-import { parsePagination } from '../common/pagination';
+import { Carrera } from '@prisma/client-carreras';
+import { HttpResponse, PaginatedResponse } from '../common/interfaces/http-response.interface';
 
 @Controller('carreras')
 export class CarrerasController {
-  constructor(private readonly service: CarrerasService) {}
+  constructor(private readonly carrerasService: CarrerasService) {}
+
+  @Post()
+  async create(@Body() createCarreraDto: CreateCarreraDto): Promise<HttpResponse<Carrera>> {
+    const carrera = await this.carrerasService.create(createCarreraDto);
+    return {
+      ok: true,
+      data: carrera,
+      message: 'Carrera creada exitosamente',
+    };
+  }
 
   @Get()
-  async list(@Query() q: ListCarrerasQueryDto) {
-    const { page, limit, skip } = parsePagination(q);
-    const where:any = {};
-    if (q.nombre) where.nombre = { contains: q.nombre, mode: 'insensitive' };
-    if (q.codigo) where.codigo = { contains: q.codigo, mode: 'insensitive' };
-    const { items, total } = await this.service.findAll(skip, limit, where);
-    return ok(items, { page, limit, total });
+  async findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<PaginatedResponse<Carrera>> {
+    return this.carrerasService.findAll(
+      page ? parseInt(page) : 1,
+      limit ? parseInt(limit) : 10,
+    );
   }
 
   @Get(':id')
-  async get(@Param('id', ParseIntPipe) id: number) {
-    return ok(await this.service.findOne(id));
-  }
-
-  @Post()
-  async create(@Body() dto: CreateCarreraDto) {
-    return ok(await this.service.create(dto));
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<HttpResponse<Carrera>> {
+    const carrera = await this.carrerasService.findOne(id);
+    return {
+      ok: true,
+      data: carrera,
+    };
   }
 
   @Patch(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateCarreraDto) {
-    return ok(await this.service.update(id, dto));
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCarreraDto: UpdateCarreraDto,
+  ): Promise<HttpResponse<Carrera>> {
+    const carrera = await this.carrerasService.update(id, updateCarreraDto);
+    return {
+      ok: true,
+      data: carrera,
+      message: 'Carrera actualizada exitosamente',
+    };
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    await this.service.remove(id);
-    return ok(true);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<HttpResponse<Carrera>> {
+    const carrera = await this.carrerasService.remove(id);
+    return {
+      ok: true,
+      data: carrera,
+      message: 'Carrera eliminada exitosamente',
+    };
   }
 }

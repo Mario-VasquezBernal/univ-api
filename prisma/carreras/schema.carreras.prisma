@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/client-carreras"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_CARRERAS")
+}
+
+enum Turno {
+  MATUTINO
+  VESPERTINO
+  NOCTURNO
+}
+
+model Carrera {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  codigo    String    @unique
+  alumnos   Alumno[]
+  materias  Materia[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("carreras")
+}
+
+model Ciclo {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  numero    Int       @unique
+  materias  Materia[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("ciclos")
+}
+
+model Materia {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  codigo    String   @unique
+  cicloId   Int
+  carreraId Int
+  creditos  Int      @default(4)
+  
+  ciclo     Ciclo    @relation(fields: [cicloId], references: [id])
+  carrera   Carrera  @relation(fields: [carreraId], references: [id])
+  cursos    Curso[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("materias")
+}
+
+model Curso {
+  id         Int         @id @default(autoincrement())
+  materiaId  Int
+  profesorId Int
+  seccion    String
+  turno      Turno       // ✅ Cambiado de String a Turno
+  cupo       Int         @default(40)
+  activo     Boolean     @default(true)
+  
+  materia    Materia     @relation(fields: [materiaId], references: [id])
+  horarios   Horario[]
+  matriculas Matricula[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("cursos")
+}
+
+model Horario {
+  id         Int      @id @default(autoincrement())
+  cursoId    Int
+  dia        String
+  horaInicio String
+  horaFin    String
+  aula       String?
+  
+  curso      Curso    @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("horarios")
+}
+
+model Alumno {
+  id         Int         @id @default(autoincrement())
+  dni        String      @unique
+  nombres    String
+  apellidos  String
+  email      String      @unique
+  telefono   String?
+  carreraId  Int
+  
+  carrera    Carrera     @relation(fields: [carreraId], references: [id])
+  matriculas Matricula[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("alumnos")
+}
+
+model Matricula {
+  id        Int      @id @default(autoincrement())
+  alumnoId  Int
+  cursoId   Int
+  
+  alumno    Alumno   @relation(fields: [alumnoId], references: [id])
+  curso     Curso    @relation(fields: [cursoId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([alumnoId, cursoId])
+  @@map("matriculas")
+}

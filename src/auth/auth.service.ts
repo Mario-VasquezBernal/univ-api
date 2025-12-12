@@ -1,60 +1,62 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaProfesoresService } from '../prisma/prisma-profesores.service';
+import { Prisma } from '@prisma/client-profesores';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from '../prisma/prisma.service';
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+}
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaProfesoresService,
     private readonly jwtService: JwtService,
   ) {}
 
-  // Validar credenciales contra la tabla Usuario
-  async validateUser(email: string, password: string) {
-    const usuario = await this.prisma.usuario.findUnique({
+  async register(email: string, password: string, nombres: string, apellidos: string) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const data: Prisma.ProfesorCreateInput = {
+      email,
+      nombres,
+      apellidos,
+      password: hashedPassword,
+    };
+
+    const profesor = await this.prisma.profesor.create({ data });
+
+    const { password: _, ...result } = profesor;
+    return result;
+  }
+
+  async login(email: string, password: string) {
+    const user = await this.prisma.profesor.findUnique({
       where: { email },
     });
 
-    if (!usuario) {
+    if (!user || !user.password || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const isMatch = await bcrypt.compare(password, usuario.password);
-    // Si los guardaste en texto plano (no recomendado): const isMatch = password === usuario.password;
-
-    if (!isMatch) {
-      throw new UnauthorizedException('Credenciales inválidas');
-    }
-
-    const { password: _pwd, ...rest } = usuario;
-    return rest;
-  }
-
-  // Generar el token
-  async login(user: any) {
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
+    const payload: JwtPayload = { sub: user.id, email: user.email };
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
-  // Para /auth/profile (usuario autenticado)
-  async getProfile(user: { userId: number }) {
-    const usuario = await this.prisma.usuario.findUnique({
-      where: { id: user.userId },
+  async validateUser(payload: JwtPayload) {
+    const user = await this.prisma.profesor.findUnique({
+      where: { id: payload.sub },
     });
 
-    if (!usuario) {
-      throw new UnauthorizedException();
+    if (!user) {
+      throw new UnauthorizedException('Usuario no encontrado');
     }
 
-    const { password: _pwd, ...rest } = usuario;
-    return rest;
+    const { password: _, ...result } = user;
+    return result;
   }
 }

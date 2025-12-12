@@ -1,155 +1,421 @@
-import { PrismaClient, Turno, DiaSemana } from '@prisma/client';
+import { PrismaClient as PrismaCarrerasClient } from '@prisma/client-carreras';
+import { PrismaClient as PrismaProfesoresClient } from '@prisma/client-profesores';
+import { PrismaClient as PrismaUsuariosClient } from '@prisma/client-usuarios';
 import * as bcrypt from 'bcrypt';
 
-const prisma = new PrismaClient();
+const prismaCarreras = new PrismaCarrerasClient();
+const prismaProfesores = new PrismaProfesoresClient();
+const prismaUsuarios = new PrismaUsuariosClient();
 
-async function main() {
+async function main(): Promise<void> {
   console.log('🌱 Iniciando seed...');
 
-  // 1. Carrera
-  const carrera = await prisma.carrera.upsert({
-    where: { codigo: 'INF' },
-    update: {},
-    create: { nombre: 'Ingeniería Informática', codigo: 'INF' },
+  // ==================== LIMPIAR DATOS ====================
+  console.log('🗑️  Limpiando datos existentes...');
+
+  // Schema Carreras
+  await prismaCarreras.matricula.deleteMany();
+  await prismaCarreras.horario.deleteMany();
+  await prismaCarreras.curso.deleteMany();
+  await prismaCarreras.alumno.deleteMany();
+  await prismaCarreras.materia.deleteMany();
+  await prismaCarreras.ciclo.deleteMany();
+  await prismaCarreras.carrera.deleteMany();
+
+  // Schema Profesores
+  await prismaProfesores.titulo.deleteMany();
+  await prismaProfesores.profesor.deleteMany();
+
+  // Schema Usuarios
+  await prismaUsuarios.usuario.deleteMany();
+
+  // ==================== CREAR CARRERAS ====================
+  console.log('📚 Creando carreras...');
+
+  const carrera1 = await prismaCarreras.carrera.create({
+    data: {
+      nombre: 'Ingeniería en Sistemas',
+      codigo: 'ISC',
+    },
   });
 
-  // 2. Ciclo
-  const ciclo = await prisma.ciclo.upsert({
-    where: { numero: 1 },
-    update: {},
-    create: { numero: 1, nombre: 'Primer ciclo' },
+  const carrera2 = await prismaCarreras.carrera.create({
+    data: {
+      nombre: 'Administración de Empresas',
+      codigo: 'ADE',
+    },
   });
 
-  // 3. Materia
-  const materia = await prisma.materia.upsert({
-    where: { codigo: 'PROG1' },
-    update: {},
-    create: {
+  console.log('✅ Carreras creadas');
+
+  // ==================== CREAR CICLOS ====================
+  console.log('📅 Creando ciclos...');
+
+  const ciclo1 = await prismaCarreras.ciclo.create({
+    data: { nombre: 'Primer Ciclo', numero: 1 },
+  });
+
+  const ciclo2 = await prismaCarreras.ciclo.create({
+    data: { nombre: 'Segundo Ciclo', numero: 2 },
+  });
+
+  const ciclo3 = await prismaCarreras.ciclo.create({
+    data: { nombre: 'Tercer Ciclo', numero: 3 },
+  });
+
+  console.log('✅ Ciclos creados');
+
+  // ==================== CREAR MATERIAS ====================
+  console.log('📖 Creando materias...');
+
+  const materia1 = await prismaCarreras.materia.create({
+    data: {
       nombre: 'Programación I',
-      codigo: 'PROG1',
+      codigo: 'PRG1',
+      cicloId: ciclo1.id,
+      carreraId: carrera1.id,
+      creditos: 4,
+    },
+  });
+
+  const materia2 = await prismaCarreras.materia.create({
+    data: {
+      nombre: 'Base de Datos',
+      codigo: 'BD1',
+      cicloId: ciclo2.id,
+      carreraId: carrera1.id,
       creditos: 5,
-      horas: 64,
-      carreraId: carrera.id,
-      cicloId: ciclo.id,
     },
   });
 
-  // 4. Profesor
-  const profesor = await prisma.profesor.upsert({
-    where: { email: 'prof@uni.edu' },
-    update: {},
-    create: {
-      nombres: 'Ada',
-      apellidos: 'Lovelace',
-      email: 'prof@uni.edu',
+  const materia3 = await prismaCarreras.materia.create({
+    data: {
+      nombre: 'Algoritmos y Estructuras de Datos',
+      codigo: 'AED1',
+      cicloId: ciclo2.id,
+      carreraId: carrera1.id,
+      creditos: 4,
     },
   });
 
-  // 5. Curso (usar upsert con la clave compuesta materiaId+seccion)
-  const curso = await prisma.curso.upsert({
-    where: {
-      materiaId_seccion: {
-        materiaId: materia.id,
-        seccion: 'A',
-      },
+  const materia4 = await prismaCarreras.materia.create({
+    data: {
+      nombre: 'Contabilidad Básica',
+      codigo: 'CONT1',
+      cicloId: ciclo1.id,
+      carreraId: carrera2.id,
+      creditos: 3,
     },
-    update: {
-      profesorId: profesor.id,
-      turno: Turno.MATUTINO,
-      cupo: 2,
+  });
+
+  const materia5 = await prismaCarreras.materia.create({
+    data: {
+      nombre: 'Administración General',
+      codigo: 'ADM1',
+      cicloId: ciclo1.id,
+      carreraId: carrera2.id,
+      creditos: 4,
     },
-    create: {
-      materiaId: materia.id,
-      profesorId: profesor.id,
+  });
+
+  console.log('✅ Materias creadas');
+
+  // ==================== CREAR PROFESORES ====================
+  console.log('👨‍🏫 Creando profesores...');
+
+  const profesor1 = await prismaProfesores.profesor.create({
+    data: {
+      nombres: 'Carlos',
+      apellidos: 'Mendez',
+      email: 'carlos.mendez@uni.edu',
+      telefono: '+593999888777',
+      titulo: 'PhD en Informática',
+      password: await bcrypt.hash('profesor123', 10),
+    },
+  });
+
+  const profesor2 = await prismaProfesores.profesor.create({
+    data: {
+      nombres: 'María',
+      apellidos: 'González',
+      email: 'maria.gonzalez@uni.edu',
+      telefono: '+593988777666',
+      titulo: 'MSc en Bases de Datos',
+      password: await bcrypt.hash('profesor123', 10),
+    },
+  });
+
+  const profesor3 = await prismaProfesores.profesor.create({
+    data: {
+      nombres: 'Luis',
+      apellidos: 'Rodríguez',
+      email: 'luis.rodriguez@uni.edu',
+      telefono: '+593977666555',
+      titulo: 'Ing. en Sistemas',
+      password: await bcrypt.hash('profesor123', 10),
+    },
+  });
+
+  console.log('✅ Profesores creados');
+
+  // Crear Títulos para profesores
+  await prismaProfesores.titulo.create({
+    data: {
+      profesorId: profesor1.id,
+      descripcion: 'Doctor en Ciencias de la Computación',
+      institucion: 'Universidad Politécnica de Madrid',
+      fecha: new Date('2015-06-15'),
+    },
+  });
+
+  await prismaProfesores.titulo.create({
+    data: {
+      profesorId: profesor2.id,
+      descripcion: 'Máster en Bases de Datos',
+      institucion: 'Universidad de Barcelona',
+      fecha: new Date('2018-09-20'),
+    },
+  });
+
+  console.log('✅ Títulos de profesores creados');
+
+  // ==================== CREAR CURSOS ====================
+  console.log('🏫 Creando cursos...');
+
+  const curso1 = await prismaCarreras.curso.create({
+    data: {
+      materiaId: materia1.id,
+      profesorId: profesor1.id,
       seccion: 'A',
-      turno: Turno.MATUTINO,
-      cupo: 2,
+      turno: 'MATUTINO',
+      cupo: 30,
+      activo: true,
     },
   });
 
-  // 6. Horarios (createMany con skipDuplicates ya está bien)
-  await prisma.horario.createMany({
+  const curso2 = await prismaCarreras.curso.create({
+    data: {
+      materiaId: materia2.id,
+      profesorId: profesor2.id,
+      seccion: 'B',
+      turno: 'VESPERTINO',
+      cupo: 25,
+      activo: true,
+    },
+  });
+
+  const curso3 = await prismaCarreras.curso.create({
+    data: {
+      materiaId: materia3.id,
+      profesorId: profesor1.id,
+      seccion: 'A',
+      turno: 'NOCTURNO',
+      cupo: 20,
+      activo: true,
+    },
+  });
+
+  const curso4 = await prismaCarreras.curso.create({
+    data: {
+      materiaId: materia4.id,
+      profesorId: profesor3.id,
+      seccion: 'C',
+      turno: 'MATUTINO',
+      cupo: 35,
+      activo: true,
+    },
+  });
+
+  console.log('✅ Cursos creados');
+
+  // ==================== CREAR HORARIOS ====================
+  console.log('⏰ Creando horarios...');
+
+  // Horarios Curso 1
+  await prismaCarreras.horario.createMany({
     data: [
       {
-        cursoId: curso.id,
-        dia: DiaSemana.LUNES,
+        cursoId: curso1.id,
+        dia: 'Lunes',
         horaInicio: '08:00',
         horaFin: '10:00',
-        aula: '101',
+        aula: 'Aula 101',
       },
       {
-        cursoId: curso.id,
-        dia: DiaSemana.MIERCOLES,
+        cursoId: curso1.id,
+        dia: 'Miércoles',
         horaInicio: '08:00',
         horaFin: '10:00',
-        aula: '101',
+        aula: 'Aula 101',
       },
     ],
-    skipDuplicates: true,
   });
 
-  // 7. Alumnos (también upsert, para evitar problemas de unique en dni/email)
-  const al1 = await prisma.alumno.upsert({
-    where: { dni: '01010101' },
-    update: {
-      nombres: 'Alan',
-      apellidos: 'Turing',
-      email: 'alan@uni.edu',
-      carreraId: carrera.id,
-    },
-    create: {
-      dni: '01010101',
-      nombres: 'Alan',
-      apellidos: 'Turing',
-      email: 'alan@uni.edu',
-      carreraId: carrera.id,
+  // Horarios Curso 2
+  await prismaCarreras.horario.createMany({
+    data: [
+      {
+        cursoId: curso2.id,
+        dia: 'Martes',
+        horaInicio: '14:00',
+        horaFin: '16:00',
+        aula: 'Aula 202',
+      },
+      {
+        cursoId: curso2.id,
+        dia: 'Jueves',
+        horaInicio: '14:00',
+        horaFin: '16:00',
+        aula: 'Aula 202',
+      },
+    ],
+  });
+
+  // Horarios Curso 3
+  await prismaCarreras.horario.createMany({
+    data: [
+      {
+        cursoId: curso3.id,
+        dia: 'Lunes',
+        horaInicio: '18:00',
+        horaFin: '20:00',
+        aula: 'Aula 303',
+      },
+      {
+        cursoId: curso3.id,
+        dia: 'Miércoles',
+        horaInicio: '18:00',
+        horaFin: '20:00',
+        aula: 'Aula 303',
+      },
+    ],
+  });
+
+  // Horarios Curso 4
+  await prismaCarreras.horario.createMany({
+    data: [
+      {
+        cursoId: curso4.id,
+        dia: 'Viernes',
+        horaInicio: '10:00',
+        horaFin: '12:00',
+        aula: 'Aula 104',
+      },
+    ],
+  });
+
+  console.log('✅ Horarios creados');
+
+  // ==================== CREAR ALUMNOS ====================
+  console.log('👨‍🎓 Creando alumnos...');
+
+  const alumno1 = await prismaCarreras.alumno.create({
+    data: {
+      dni: '1234567890',
+      nombres: 'Juan',
+      apellidos: 'Pérez',
+      email: 'juan.perez@student.edu',
+      telefono: '+593987654321',
+      carreraId: carrera1.id,
     },
   });
 
-  const al2 = await prisma.alumno.upsert({
-    where: { dni: '02020202' },
-    update: {
-      nombres: 'Grace',
-      apellidos: 'Hopper',
-      email: 'grace@uni.edu',
-      carreraId: carrera.id,
-    },
-    create: {
-      dni: '02020202',
-      nombres: 'Grace',
-      apellidos: 'Hopper',
-      email: 'grace@uni.edu',
-      carreraId: carrera.id,
+  const alumno2 = await prismaCarreras.alumno.create({
+    data: {
+      dni: '0987654321',
+      nombres: 'Ana',
+      apellidos: 'López',
+      email: 'ana.lopez@student.edu',
+      telefono: '+593976543210',
+      carreraId: carrera1.id,
     },
   });
 
-  // 8. Usuario para login (admin)
-  const hashedPassword = await bcrypt.hash('admin123', 10);
-
-  const usuario = await prisma.usuario.upsert({
-    where: { email: 'admin@univ.ec' },
-    update: {
-      password: hashedPassword,
-      nombre: 'Admin UNIV',
-      role: 'ADMIN',
-    },
-    create: {
-      email: 'admin@univ.ec',
-      password: hashedPassword,
-      nombre: 'Admin UNIV',
-      role: 'ADMIN',
+  const alumno3 = await prismaCarreras.alumno.create({
+    data: {
+      dni: '1122334455',
+      nombres: 'Pedro',
+      apellidos: 'Martínez',
+      email: 'pedro.martinez@student.edu',
+      telefono: '+593965432109',
+      carreraId: carrera2.id,
     },
   });
 
-  console.log('🌱 Seed completado con éxito');
-  console.log({ carrera, ciclo, materia, profesor, curso, al1, al2, usuario });
+  const alumno4 = await prismaCarreras.alumno.create({
+    data: {
+      dni: '5566778899',
+      nombres: 'Laura',
+      apellidos: 'Sánchez',
+      email: 'laura.sanchez@student.edu',
+      telefono: '+593954321098',
+      carreraId: carrera1.id,
+    },
+  });
+
+  console.log('✅ Alumnos creados');
+
+  // ==================== CREAR MATRÍCULAS ====================
+  console.log('📝 Creando matrículas...');
+
+  await prismaCarreras.matricula.createMany({
+    data: [
+      { alumnoId: alumno1.id, cursoId: curso1.id },
+      { alumnoId: alumno1.id, cursoId: curso2.id },
+      { alumnoId: alumno2.id, cursoId: curso1.id },
+      { alumnoId: alumno2.id, cursoId: curso3.id },
+      { alumnoId: alumno3.id, cursoId: curso4.id },
+      { alumnoId: alumno4.id, cursoId: curso2.id },
+    ],
+  });
+
+  console.log('✅ Matrículas creadas');
+
+  // ==================== CREAR USUARIOS ====================
+  console.log('👤 Creando usuarios...');
+
+  await prismaUsuarios.usuario.createMany({
+    data: [
+      {
+        email: 'admin@uni.edu',
+        password: await bcrypt.hash('admin123', 10),
+        rol: 'ADMIN',
+      },
+      {
+        email: 'coordinador@uni.edu',
+        password: await bcrypt.hash('coord123', 10),
+        rol: 'COORDINADOR',
+      },
+      {
+        email: 'usuario@uni.edu',
+        password: await bcrypt.hash('user123', 10),
+        rol: 'USUARIO',
+      },
+    ],
+  });
+
+  console.log('✅ Usuarios creados');
+
+  console.log('\n🎉 Seed completado exitosamente!\n');
+  console.log('📊 Resumen:');
+  console.log(`   - ${2} Carreras`);
+  console.log(`   - ${3} Ciclos`);
+  console.log(`   - ${5} Materias`);
+  console.log(`   - ${3} Profesores`);
+  console.log(`   - ${4} Cursos`);
+  console.log(`   - ${8} Horarios`);
+  console.log(`   - ${4} Alumnos`);
+  console.log(`   - ${6} Matrículas`);
+  console.log(`   - ${3} Usuarios`);
 }
 
 main()
-  .catch((e) => {
-    console.error('❌ Error en seed:', e);
+  .catch((error: Error) => {
+    console.error('❌ Error en seed:', error);
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await prismaCarreras.$disconnect();
+    await prismaProfesores.$disconnect();
+    await prismaUsuarios.$disconnect();
   });

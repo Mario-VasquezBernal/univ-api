@@ -1,93 +1,54 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaCarrerasService } from '../prisma/prisma-carreras.service';
 import { CreateCicloDto } from './dto/create-ciclo.dto';
 import { UpdateCicloDto } from './dto/update-ciclo.dto';
+import { Ciclo } from '@prisma/client-carreras';
 
 @Injectable()
 export class CiclosService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaCarrerasService) {}
 
-  private defaultInclude = {
-    _count: { select: { materias: true } }, // conteo rápido
-  } as const;
+  async create(createCicloDto: CreateCicloDto): Promise<Ciclo> {
+    return this.prisma.ciclo.create({
+      data: createCicloDto,
+    });
+  }
 
-  async findAll(skip: number, take: number, q: any) {
-    const where: any = {};
-    if (q.numero) where.numero = Number(q.numero);
-    if (q.nombre) where.nombre = { contains: q.nombre, mode: 'insensitive' };
-
-    const [items, total] = await this.prisma.$transaction([
-      this.prisma.ciclo.findMany({
-        where,
-        skip,
-        take,
-        include: this.defaultInclude,
-        orderBy: { id: 'desc' },
-      }),
-      this.prisma.ciclo.count({ where }),
+  async findAll(): Promise<{ items: Ciclo[]; total: number }> {
+    const [items, total] = await Promise.all([
+      this.prisma.ciclo.findMany({ orderBy: { numero: 'asc' } }),
+      this.prisma.ciclo.count(),
     ]);
+
     return { items, total };
   }
 
-  async findOne(id: number) {
-    const item = await this.prisma.ciclo.findUnique({
+  async findOne(id: number): Promise<Ciclo> {
+    const ciclo = await this.prisma.ciclo.findUnique({
       where: { id },
-      include: this.defaultInclude,
     });
-    if (!item) throw new NotFoundException('Ciclo no encontrado');
-    return item;
-  }
 
-  async create(dto: CreateCicloDto) {
-    try {
-      return await this.prisma.ciclo.create({
-        data: dto,
-        include: this.defaultInclude,
-      });
-    } catch (e: any) {
-      if (e.code === 'P2002') {
-        // unique: numero
-        throw new BadRequestException('Ya existe un ciclo con ese número.');
-      }
-      throw e;
-    }
-  }
-
-  async update(id: number, dto: UpdateCicloDto) {
-    await this.ensureExists(id);
-    try {
-      return await this.prisma.ciclo.update({
-        where: { id },
-        data: dto,
-        include: this.defaultInclude,
-      });
-    } catch (e: any) {
-      if (e.code === 'P2002') {
-        throw new BadRequestException('Ya existe un ciclo con ese número.');
-      }
-      throw e;
-    }
-  }
-
-  async remove(id: number) {
-    await this.ensureExists(id);
-
-    // Evitar eliminar si tiene materias asociadas
-    const materias = await this.prisma.materia.count({ where: { cicloId: id } });
-    if (materias > 0) {
-      throw new BadRequestException('No se puede eliminar: el ciclo tiene materias asociadas.');
+    if (!ciclo) {
+      throw new NotFoundException(`Ciclo con ID ${id} no encontrado`);
     }
 
-    await this.prisma.ciclo.delete({ where: { id } });
-    return true;
+    return ciclo;
   }
 
-  private async ensureExists(id: number) {
-    const found = await this.prisma.ciclo.findUnique({ where: { id } });
-    if (!found) throw new NotFoundException('Ciclo no encontrado');
+  async update(id: number, updateCicloDto: UpdateCicloDto): Promise<Ciclo> {
+    await this.findOne(id);
+
+    return this.prisma.ciclo.update({
+      where: { id },
+      data: updateCicloDto,
+    });
+  }
+
+  async remove(id: number): Promise<Ciclo> {
+    await this.findOne(id);
+
+    return this.prisma.ciclo.delete({
+      where: { id },
+    });
   }
 }
