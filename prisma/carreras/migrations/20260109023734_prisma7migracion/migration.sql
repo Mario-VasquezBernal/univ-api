@@ -1,62 +1,5 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Alumno` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Carrera` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Ciclo` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Curso` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Horario` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Materia` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Matricula` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "carreras"."Alumno" DROP CONSTRAINT "Alumno_carreraId_fkey";
-
--- DropForeignKey
-ALTER TABLE "carreras"."Curso" DROP CONSTRAINT "Curso_materiaId_fkey";
-
--- DropForeignKey
-ALTER TABLE "carreras"."Horario" DROP CONSTRAINT "Horario_cursoId_fkey";
-
--- DropForeignKey
-ALTER TABLE "carreras"."Materia" DROP CONSTRAINT "Materia_carreraId_fkey";
-
--- DropForeignKey
-ALTER TABLE "carreras"."Materia" DROP CONSTRAINT "Materia_cicloId_fkey";
-
--- DropForeignKey
-ALTER TABLE "carreras"."Matricula" DROP CONSTRAINT "Matricula_alumnoId_fkey";
-
--- DropForeignKey
-ALTER TABLE "carreras"."Matricula" DROP CONSTRAINT "Matricula_cursoId_fkey";
-
--- DropTable
-DROP TABLE "carreras"."Alumno";
-
--- DropTable
-DROP TABLE "carreras"."Carrera";
-
--- DropTable
-DROP TABLE "carreras"."Ciclo";
-
--- DropTable
-DROP TABLE "carreras"."Curso";
-
--- DropTable
-DROP TABLE "carreras"."Horario";
-
--- DropTable
-DROP TABLE "carreras"."Materia";
-
--- DropTable
-DROP TABLE "carreras"."Matricula";
-
--- DropEnum
-DROP TYPE "carreras"."DiaSemana";
-
--- DropEnum
-DROP TYPE "carreras"."Turno";
+-- CreateEnum
+CREATE TYPE "Turno" AS ENUM ('MATUTINO', 'VESPERTINO', 'NOCTURNO');
 
 -- CreateTable
 CREATE TABLE "carreras" (
@@ -100,7 +43,7 @@ CREATE TABLE "cursos" (
     "materiaId" INTEGER NOT NULL,
     "profesorId" INTEGER NOT NULL,
     "seccion" TEXT NOT NULL,
-    "turno" TEXT NOT NULL,
+    "turno" "Turno" NOT NULL,
     "cupo" INTEGER NOT NULL DEFAULT 40,
     "activo" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
