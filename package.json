@@ -5,11 +5,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "start:prod": "node dist/src/main",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"prisma/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:prod": "node dist/main.js",
+    "postinstall": "npm run prisma:generate",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "prisma:generate": "npm run prisma:generate:usuarios && npm run prisma:generate:profesores && npm run prisma:generate:carreras",
     "prisma:generate:usuarios": "prisma generate --config=prisma.usuarios.config.ts",
