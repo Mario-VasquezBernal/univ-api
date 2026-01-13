@@ -1,5 +1,9 @@
 {
   "name": "univ-api",
+    "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10.0.0"
+  },
   "version": "0.0.1",
   "description": "Backend con NestJS y Prisma 7 - Gestión Universitaria",
   "private": true,
