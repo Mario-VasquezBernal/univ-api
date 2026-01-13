@@ -1,0 +1,14 @@
+@"
+[phases.install]
+cmds = ["npm ci --include=dev"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm run start:prod"
+"@ | Out-File -FilePath nixpacks.toml -Encoding utf8
+
+git add nixpacks.toml
+git commit -m "fix: install dev dependencies for nest build"
+git push

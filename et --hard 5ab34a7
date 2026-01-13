@@ -1,0 +1,17 @@
+[33me4a8dea[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix: update config files without datasource
+[33m933c552[m feat: add Dockerfile with Node.js 20.19 for Prisma 7
+[33m4467e5b[m fix: use Node.js 20.19 for Prisma 7
+[33m6c69423[m fix: force Node.js 23 for Prisma 7 compatibility
+[33m36494bb[m railway json
+[33m675445d[m fix: regenerate package-lock.json
+[33m9b7b645[m 1
+[33md728284[m fix: corregir sintaxis de comandos Prisma (--schema en lugar de --config)
+[33m4477fad[m fix: update to Prisma 7.2.0 and Node.js 20.19+
+[33md5415cc[m fix: update Prisma to version 7.2.0
+[33m78ef252[m creacion de package.json bien estructurado
+[33m5ab34a7[m prisma 7
+[33m3d995f0[m jwt con 3 bases de datos funcionando sin registros any
+[33md129b5d[m autentcacionLista
+[33mb4087f0[m avancejwt
+[33m4687adc[m Initial commit
+[33mdaa52e7[m versionInicial
