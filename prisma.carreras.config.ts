@@ -1,12 +1,12 @@
-import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import 'dotenv/config'
+import { defineConfig, env } from 'prisma/config'
 
 export default defineConfig({
-  schema: "prisma/carreras/schema.carreras.prisma",
-  migrations: {
-    path: "prisma/carreras/migrations",
-  },
+  schema: './prisma/carreras/schema.carreras.prisma',
   datasource: {
-    url: env("DATABASE_URL_CARRERAS"),
+    url: env('DATABASE_URL_CARRERAS')
   },
-});
+  migrations: {
+    path: './prisma/carreras/migrations'
+  }
+})

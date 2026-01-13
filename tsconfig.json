@@ -14,6 +14,11 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@prisma/client-usuarios": ["node_modules/@prisma/client-usuarios"],
+      "@prisma/client-profesores": ["node_modules/@prisma/client-profesores"],
+      "@prisma/client-carreras": ["node_modules/@prisma/client-carreras"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,

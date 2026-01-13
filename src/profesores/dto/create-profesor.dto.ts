@@ -15,8 +15,7 @@ export class CreateProfesorDto {
   telefono?: string;
 
   @IsString()
-  @IsOptional()
-  titulo?: string;
+  titulo: string; // Remover @IsOptional - ahora es requerido
 
   @IsString()
   @IsOptional()

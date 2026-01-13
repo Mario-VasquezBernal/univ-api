@@ -1,11 +1,25 @@
+import 'dotenv/config';
 import { PrismaClient as PrismaCarrerasClient } from '@prisma/client-carreras';
 import { PrismaClient as PrismaProfesoresClient } from '@prisma/client-profesores';
 import { PrismaClient as PrismaUsuariosClient } from '@prisma/client-usuarios';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 import * as bcrypt from 'bcrypt';
 
-const prismaCarreras = new PrismaCarrerasClient();
-const prismaProfesores = new PrismaProfesoresClient();
-const prismaUsuarios = new PrismaUsuariosClient();
+// Crear pools de conexión
+const poolCarreras = new Pool({ connectionString: process.env.DATABASE_URL_CARRERAS });
+const poolProfesores = new Pool({ connectionString: process.env.DATABASE_URL_PROFESORES });
+const poolUsuarios = new Pool({ connectionString: process.env.DATABASE_URL_USUARIOS });
+
+// Crear adapters
+const adapterCarreras = new PrismaPg(poolCarreras);
+const adapterProfesores = new PrismaPg(poolProfesores);
+const adapterUsuarios = new PrismaPg(poolUsuarios);
+
+// Crear clientes con adapters
+const prismaCarreras = new PrismaCarrerasClient({ adapter: adapterCarreras });
+const prismaProfesores = new PrismaProfesoresClient({ adapter: adapterProfesores });
+const prismaUsuarios = new PrismaUsuariosClient({ adapter: adapterUsuarios });
 
 async function main(): Promise<void> {
   console.log('🌱 Iniciando seed...');
@@ -158,7 +172,6 @@ async function main(): Promise<void> {
 
   console.log('✅ Profesores creados');
 
-  // Crear Títulos para profesores
   await prismaProfesores.titulo.create({
     data: {
       profesorId: profesor1.id,
@@ -231,76 +244,15 @@ async function main(): Promise<void> {
   // ==================== CREAR HORARIOS ====================
   console.log('⏰ Creando horarios...');
 
-  // Horarios Curso 1
   await prismaCarreras.horario.createMany({
     data: [
-      {
-        cursoId: curso1.id,
-        dia: 'Lunes',
-        horaInicio: '08:00',
-        horaFin: '10:00',
-        aula: 'Aula 101',
-      },
-      {
-        cursoId: curso1.id,
-        dia: 'Miércoles',
-        horaInicio: '08:00',
-        horaFin: '10:00',
-        aula: 'Aula 101',
-      },
-    ],
-  });
-
-  // Horarios Curso 2
-  await prismaCarreras.horario.createMany({
-    data: [
-      {
-        cursoId: curso2.id,
-        dia: 'Martes',
-        horaInicio: '14:00',
-        horaFin: '16:00',
-        aula: 'Aula 202',
-      },
-      {
-        cursoId: curso2.id,
-        dia: 'Jueves',
-        horaInicio: '14:00',
-        horaFin: '16:00',
-        aula: 'Aula 202',
-      },
-    ],
-  });
-
-  // Horarios Curso 3
-  await prismaCarreras.horario.createMany({
-    data: [
-      {
-        cursoId: curso3.id,
-        dia: 'Lunes',
-        horaInicio: '18:00',
-        horaFin: '20:00',
-        aula: 'Aula 303',
-      },
-      {
-        cursoId: curso3.id,
-        dia: 'Miércoles',
-        horaInicio: '18:00',
-        horaFin: '20:00',
-        aula: 'Aula 303',
-      },
-    ],
-  });
-
-  // Horarios Curso 4
-  await prismaCarreras.horario.createMany({
-    data: [
-      {
-        cursoId: curso4.id,
-        dia: 'Viernes',
-        horaInicio: '10:00',
-        horaFin: '12:00',
-        aula: 'Aula 104',
-      },
+      { cursoId: curso1.id, dia: 'Lunes', horaInicio: '08:00', horaFin: '10:00', aula: 'Aula 101' },
+      { cursoId: curso1.id, dia: 'Miércoles', horaInicio: '08:00', horaFin: '10:00', aula: 'Aula 101' },
+      { cursoId: curso2.id, dia: 'Martes', horaInicio: '14:00', horaFin: '16:00', aula: 'Aula 202' },
+      { cursoId: curso2.id, dia: 'Jueves', horaInicio: '14:00', horaFin: '16:00', aula: 'Aula 202' },
+      { cursoId: curso3.id, dia: 'Lunes', horaInicio: '18:00', horaFin: '20:00', aula: 'Aula 303' },
+      { cursoId: curso3.id, dia: 'Miércoles', horaInicio: '18:00', horaFin: '20:00', aula: 'Aula 303' },
+      { cursoId: curso4.id, dia: 'Viernes', horaInicio: '10:00', horaFin: '12:00', aula: 'Aula 104' },
     ],
   });
 
@@ -310,47 +262,19 @@ async function main(): Promise<void> {
   console.log('👨‍🎓 Creando alumnos...');
 
   const alumno1 = await prismaCarreras.alumno.create({
-    data: {
-      dni: '1234567890',
-      nombres: 'Juan',
-      apellidos: 'Pérez',
-      email: 'juan.perez@student.edu',
-      telefono: '+593987654321',
-      carreraId: carrera1.id,
-    },
+    data: { dni: '1234567890', nombres: 'Juan', apellidos: 'Pérez', email: 'juan.perez@student.edu', telefono: '+593987654321', carreraId: carrera1.id },
   });
 
   const alumno2 = await prismaCarreras.alumno.create({
-    data: {
-      dni: '0987654321',
-      nombres: 'Ana',
-      apellidos: 'López',
-      email: 'ana.lopez@student.edu',
-      telefono: '+593976543210',
-      carreraId: carrera1.id,
-    },
+    data: { dni: '0987654321', nombres: 'Ana', apellidos: 'López', email: 'ana.lopez@student.edu', telefono: '+593976543210', carreraId: carrera1.id },
   });
 
   const alumno3 = await prismaCarreras.alumno.create({
-    data: {
-      dni: '1122334455',
-      nombres: 'Pedro',
-      apellidos: 'Martínez',
-      email: 'pedro.martinez@student.edu',
-      telefono: '+593965432109',
-      carreraId: carrera2.id,
-    },
+    data: { dni: '1122334455', nombres: 'Pedro', apellidos: 'Martínez', email: 'pedro.martinez@student.edu', telefono: '+593965432109', carreraId: carrera2.id },
   });
 
   const alumno4 = await prismaCarreras.alumno.create({
-    data: {
-      dni: '5566778899',
-      nombres: 'Laura',
-      apellidos: 'Sánchez',
-      email: 'laura.sanchez@student.edu',
-      telefono: '+593954321098',
-      carreraId: carrera1.id,
-    },
+    data: { dni: '5566778899', nombres: 'Laura', apellidos: 'Sánchez', email: 'laura.sanchez@student.edu', telefono: '+593954321098', carreraId: carrera1.id },
   });
 
   console.log('✅ Alumnos creados');
@@ -376,37 +300,14 @@ async function main(): Promise<void> {
 
   await prismaUsuarios.usuario.createMany({
     data: [
-      {
-        email: 'admin@uni.edu',
-        password: await bcrypt.hash('admin123', 10),
-        rol: 'ADMIN',
-      },
-      {
-        email: 'coordinador@uni.edu',
-        password: await bcrypt.hash('coord123', 10),
-        rol: 'COORDINADOR',
-      },
-      {
-        email: 'usuario@uni.edu',
-        password: await bcrypt.hash('user123', 10),
-        rol: 'USUARIO',
-      },
+      { email: 'admin@uni.edu', password: await bcrypt.hash('admin123', 10), rol: 'ADMIN' },
+      { email: 'coordinador@uni.edu', password: await bcrypt.hash('coord123', 10), rol: 'COORDINADOR' },
+      { email: 'usuario@uni.edu', password: await bcrypt.hash('user123', 10), rol: 'USUARIO' },
     ],
   });
 
   console.log('✅ Usuarios creados');
-
   console.log('\n🎉 Seed completado exitosamente!\n');
-  console.log('📊 Resumen:');
-  console.log(`   - ${2} Carreras`);
-  console.log(`   - ${3} Ciclos`);
-  console.log(`   - ${5} Materias`);
-  console.log(`   - ${3} Profesores`);
-  console.log(`   - ${4} Cursos`);
-  console.log(`   - ${8} Horarios`);
-  console.log(`   - ${4} Alumnos`);
-  console.log(`   - ${6} Matrículas`);
-  console.log(`   - ${3} Usuarios`);
 }
 
 main()
@@ -418,4 +319,7 @@ main()
     await prismaCarreras.$disconnect();
     await prismaProfesores.$disconnect();
     await prismaUsuarios.$disconnect();
+    await poolCarreras.end();
+    await poolProfesores.end();
+    await poolUsuarios.end();
   });

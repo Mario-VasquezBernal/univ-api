@@ -28,8 +28,7 @@ export class CreateCursoDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @IsOptional()
-  cupo?: number = 40;
+  cupo: number = 40; // Remover @IsOptional y el ?
 
   @IsOptional()
   @IsBoolean()

@@ -1,16 +1,21 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { PrismaClient as PrismaCarrerasClient } from '@prisma/client-carreras';
+import { PrismaClient } from '@prisma/client-carreras';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 @Injectable()
-export class PrismaCarrerasService
-  extends PrismaCarrerasClient
-  implements OnModuleInit, OnModuleDestroy
-{
-  async onModuleInit(): Promise<void> {
+export class PrismaCarrerasService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  constructor() {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL_CARRERAS });
+    const adapter = new PrismaPg(pool);
+    super({ adapter });
+  }
+
+  async onModuleInit() {
     await this.$connect();
   }
 
-  async onModuleDestroy(): Promise<void> {
+  async onModuleDestroy() {
     await this.$disconnect();
   }
 }

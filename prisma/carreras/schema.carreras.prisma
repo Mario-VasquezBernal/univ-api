@@ -5,7 +5,89 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL_CARRERAS")
 }
 
-// ... resto de tus modelos (Carrera, Ciclo, Materia, Curso, Alumno, etc.)
+model Carrera {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  codigo   String    @unique
+  materias Materia[]
+  alumnos  Alumno[]
+
+  @@map("carreras")
+}
+
+model Ciclo {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  numero   Int       @unique
+  materias Materia[]
+
+  @@map("ciclos")
+}
+
+model Materia {
+  id        Int     @id @default(autoincrement())
+  nombre    String
+  codigo    String  @unique
+  creditos  Int
+  cicloId   Int
+  carreraId Int
+  ciclo     Ciclo   @relation(fields: [cicloId], references: [id])
+  carrera   Carrera @relation(fields: [carreraId], references: [id])
+  cursos    Curso[]
+
+  @@map("materias")
+}
+
+model Curso {
+  id          Int         @id @default(autoincrement())
+  materiaId   Int
+  profesorId  Int
+  seccion     String
+  turno       String
+  cupo        Int
+  activo      Boolean     @default(true)
+  materia     Materia     @relation(fields: [materiaId], references: [id])
+  horarios    Horario[]
+  matriculas  Matricula[]
+
+  @@map("cursos")
+}
+
+model Horario {
+  id         Int    @id @default(autoincrement())
+  cursoId    Int
+  dia        String
+  horaInicio String
+  horaFin    String
+  aula       String
+  curso      Curso  @relation(fields: [cursoId], references: [id])
+
+  @@map("horarios")
+}
+
+model Alumno {
+  id          Int         @id @default(autoincrement())
+  dni         String      @unique
+  nombres     String
+  apellidos   String
+  email       String      @unique
+  telefono    String?
+  carreraId   Int
+  carrera     Carrera     @relation(fields: [carreraId], references: [id])
+  matriculas  Matricula[]
+
+  @@map("alumnos")
+}
+
+model Matricula {
+  id       Int    @id @default(autoincrement())
+  alumnoId Int
+  cursoId  Int
+  alumno   Alumno @relation(fields: [alumnoId], references: [id])
+  curso    Curso  @relation(fields: [cursoId], references: [id])
+
+  @@unique([alumnoId, cursoId])
+  @@map("matriculas")
+}

@@ -16,12 +16,11 @@ export class ProfesoresService {
       apellidos: createProfesorDto.apellidos,
       email: createProfesorDto.email,
       telefono: createProfesorDto.telefono,
-      titulo: createProfesorDto.titulo,
+      titulo: createProfesorDto.titulo || 'Sin título',
+      password: createProfesorDto.password 
+        ? await bcrypt.hash(createProfesorDto.password, 10)
+        : await bcrypt.hash('default123', 10),
     };
-
-    if (createProfesorDto.password) {
-      data.password = await bcrypt.hash(createProfesorDto.password, 10);
-    }
 
     return this.prisma.profesor.create({ data });
   }

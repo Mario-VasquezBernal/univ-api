@@ -16,7 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string, nombres: string, apellidos: string) {
+  async register(email: string, password: string, nombres: string, apellidos: string, titulo?: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const data: Prisma.ProfesorCreateInput = {
@@ -24,6 +24,7 @@ export class AuthService {
       nombres,
       apellidos,
       password: hashedPassword,
+      titulo: titulo || 'Sin título',
     };
 
     const profesor = await this.prisma.profesor.create({ data });
