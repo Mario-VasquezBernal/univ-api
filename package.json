@@ -3,36 +3,33 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main.js",
-    "build": "npx nest build",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"prisma/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --fix",
-    
     "prisma:generate": "npm run prisma:generate:usuarios && npm run prisma:generate:profesores && npm run prisma:generate:carreras",
     "prisma:generate:usuarios": "prisma generate --config=prisma.usuarios.config.ts",
     "prisma:generate:profesores": "prisma generate --config=prisma.profesores.config.ts",
     "prisma:generate:carreras": "prisma generate --config=prisma.carreras.config.ts",
-    
     "prisma:migrate": "npm run prisma:migrate:usuarios && npm run prisma:migrate:profesores && npm run prisma:migrate:carreras",
     "prisma:migrate:usuarios": "prisma migrate dev --config=prisma.usuarios.config.ts",
     "prisma:migrate:profesores": "prisma migrate dev --config=prisma.profesores.config.ts",
     "prisma:migrate:carreras": "prisma migrate dev --config=prisma.carreras.config.ts",
-    
     "prisma:migrate:deploy": "npm run prisma:migrate:deploy:usuarios && npm run prisma:migrate:deploy:profesores && npm run prisma:migrate:deploy:carreras",
     "prisma:migrate:deploy:usuarios": "prisma migrate deploy --config=prisma.usuarios.config.ts",
     "prisma:migrate:deploy:profesores": "prisma migrate deploy --config=prisma.profesores.config.ts",
     "prisma:migrate:deploy:carreras": "prisma migrate deploy --config=prisma.carreras.config.ts",
-    
     "prisma:studio": "prisma studio --config=prisma.carreras.config.ts",
     "prisma:studio:usuarios": "prisma studio --config=prisma.usuarios.config.ts --port 5555",
     "prisma:studio:profesores": "prisma studio --config=prisma.profesores.config.ts --port 5556",
     "prisma:studio:carreras": "prisma studio --config=prisma.carreras.config.ts --port 5557",
-    
     "db:reset": "npm run db:reset:usuarios && npm run db:reset:profesores && npm run db:reset:carreras",
     "db:reset:usuarios": "prisma migrate reset --config=prisma.usuarios.config.ts --force",
     "db:reset:profesores": "prisma migrate reset --config=prisma.profesores.config.ts --force",
     "db:reset:carreras": "prisma migrate reset --config=prisma.carreras.config.ts --force",
-    
     "seed": "ts-node prisma/seed.ts",
     "test:api": "echo 'Opcional: aquí puedes correr tests/e2e o colección de Postman'"
+  },
+  "dependencies": {
+    "@nestjs/cli": "^11.0.14"
   }
 }
