@@ -5,32 +5,17 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL_PROFESORES")
 }
 
 model Profesor {
   id        Int      @id @default(autoincrement())
-  nombres   String
-  apellidos String
   email     String   @unique
-  telefono  String?
-  titulo    String?
-  password  String?
+  password  String
+  nombre    String
+  apellido  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  titulos   Titulo[]
 
   @@map("profesores")
-}
-
-model Titulo {
-  id          Int       @id @default(autoincrement())
-  profesorId  Int
-  descripcion String
-  institucion String?
-  fecha       DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  profesor    Profesor  @relation(fields: [profesorId], references: [id], onDelete: Cascade)
-
-  @@map("titulos")
 }
