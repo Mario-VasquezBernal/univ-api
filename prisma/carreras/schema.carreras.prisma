@@ -78,8 +78,12 @@ model Alumno {
   carrera     Carrera     @relation(fields: [carreraId], references: [id])
   matriculas  Matricula[]
 
+  // 🔹 nuevo campo estado
+  estado      String      @default("ACTIVO")
+
   @@map("alumnos")
 }
+
 
 model Matricula {
   id       Int    @id @default(autoincrement())
@@ -87,6 +91,7 @@ model Matricula {
   cursoId  Int
   alumno   Alumno @relation(fields: [alumnoId], references: [id])
   curso    Curso  @relation(fields: [cursoId], references: [id])
+  periodo  String @default("2025-1")
 
   @@unique([alumnoId, cursoId])
   @@map("matriculas")

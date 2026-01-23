@@ -259,25 +259,58 @@ async function main(): Promise<void> {
   console.log('✅ Horarios creados');
 
   // ==================== CREAR ALUMNOS ====================
-  console.log('👨‍🎓 Creando alumnos...');
+console.log('👨‍🎓 Creando alumnos...');
 
-  const alumno1 = await prismaCarreras.alumno.create({
-    data: { dni: '1234567890', nombres: 'Juan', apellidos: 'Pérez', email: 'juan.perez@student.edu', telefono: '+593987654321', carreraId: carrera1.id },
-  });
+const alumno1 = await prismaCarreras.alumno.create({
+  data: {
+    dni: '1234567890',
+    nombres: 'Juan',
+    apellidos: 'Pérez',
+    email: 'juan.perez@student.edu',
+    telefono: '+593987654321',
+    carreraId: carrera1.id,
+    estado: 'ACTIVO',
+  },
+});
 
-  const alumno2 = await prismaCarreras.alumno.create({
-    data: { dni: '0987654321', nombres: 'Ana', apellidos: 'López', email: 'ana.lopez@student.edu', telefono: '+593976543210', carreraId: carrera1.id },
-  });
+const alumno2 = await prismaCarreras.alumno.create({
+  data: {
+    dni: '0987654321',
+    nombres: 'Ana',
+    apellidos: 'López',
+    email: 'ana.lopez@student.edu',
+    telefono: '+593976543210',
+    carreraId: carrera1.id,
+    estado: 'ACTIVO',
+  },
+});
 
-  const alumno3 = await prismaCarreras.alumno.create({
-    data: { dni: '1122334455', nombres: 'Pedro', apellidos: 'Martínez', email: 'pedro.martinez@student.edu', telefono: '+593965432109', carreraId: carrera2.id },
-  });
+const alumno3 = await prismaCarreras.alumno.create({
+  data: {
+    dni: '1122334455',
+    nombres: 'Pedro',
+    apellidos: 'Martínez',
+    email: 'pedro.martinez@student.edu',
+    telefono: '+593965432109',
+    carreraId: carrera2.id,
+    estado: 'ACTIVO',
+  },
+});
 
-  const alumno4 = await prismaCarreras.alumno.create({
-    data: { dni: '5566778899', nombres: 'Laura', apellidos: 'Sánchez', email: 'laura.sanchez@student.edu', telefono: '+593954321098', carreraId: carrera1.id },
-  });
+const alumno4 = await prismaCarreras.alumno.create({
+  data: {
+    dni: '5566778899',
+    nombres: 'Laura',
+    apellidos: 'Sánchez',
+    email: 'laura.sanchez@student.edu',
+    telefono: '+593954321098',
+    carreraId: carrera1.id,
+    estado: 'ACTIVO',
+  },
+});
 
-  console.log('✅ Alumnos creados');
+console.log('✅ Alumnos creados');
+
 
   // ==================== CREAR MATRÍCULAS ====================
   console.log('📝 Creando matrículas...');

@@ -40,6 +40,37 @@ export class ProfesoresController {
     );
   }
 
+  // ⬇️ RUTAS FIJAS ANTES DE :id
+
+  // Parte 1: profesores con múltiples asignaturas
+  @Get('con-multiples-asignaturas')
+  async findConMasDeUnaAsignatura() {
+    const data = await this.profesoresService.findConMasDeUnaAsignatura();
+    return {
+      ok: true,
+      data,
+    };
+  }
+
+  // Parte 2: búsqueda avanzada con AND / OR / NOT
+  @Get('busqueda-avanzada')
+  async busquedaAvanzada(@Query() query: Record<string, any>): Promise<HttpResponse<Profesor[]>> {
+    const { texto, titulo, excluirTitulo } = query;
+
+    const profesores = await this.profesoresService.busquedaAvanzada({
+      texto,
+      titulo,
+      excluirTitulo,
+    });
+
+    return {
+      ok: true,
+      data: profesores,
+    };
+  }
+
+  // ⬇️ RUTA DINÁMICA AL FINAL
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<HttpResponse<Profesor>> {
     const profesor = await this.profesoresService.findOne(id);

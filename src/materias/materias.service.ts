@@ -65,4 +65,13 @@ export class MateriasService {
     await this.findOne(id);
     return this.prisma.materia.delete({ where: { id } });
   }
+
+  // 🔹 NUEVO: materias asociadas a una carrera específica
+  async findByCarrera(carreraId: number) {
+    return this.prisma.materia.findMany({
+      where: { carreraId },
+      include: { carrera: true, ciclo: true },
+      orderBy: { id: 'asc' },
+    });
+  }
 }

@@ -1,0 +1,337 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Sistema Gestión Universitaria - Semana 13",
+  "dateExported": "2026-01-22",
+  "version": "1.1",
+  "folders": [
+    {
+      "name": "Alumnos",
+      "requests": []
+    },
+    {
+      "name": "Profesores",
+      "requests": []
+    },
+    {
+      "name": "Matrículas",
+      "requests": []
+    },
+    {
+      "name": "Cursos",
+      "requests": []
+    },
+    {
+      "name": "Carreras",
+      "requests": []
+    },
+    {
+      "name": "Materias",
+      "requests": []
+    }
+  ],
+  "requests": [
+    {
+      "name": "Listar Alumnos",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos?page=1&limit=10",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "Crear Alumno",
+      "method": "POST",
+      "url": "http://localhost:3000/api/alumnos",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"dni\": \"9999999999\",\n  \"nombres\": \"Nuevo\",\n  \"apellidos\": \"Alumno\",\n  \"email\": \"nuevo.alumno@test.edu\",\n  \"telefono\": \"+593999999999\",\n  \"carreraId\": 7\n}",
+        "form": []
+      },
+      "folder": "Alumnos"
+    },
+    {
+      "name": "Obtener Alumno por ID",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos/9",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "Actualizar Alumno",
+      "method": "PATCH",
+      "url": "http://localhost:3000/api/alumnos/9",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"telefono\": \"+593987654321\",\n  \"estado\": \"ACTIVO\"\n}",
+        "form": []
+      },
+      "folder": "Alumnos"
+    },
+    {
+      "name": "Eliminar Alumno",
+      "method": "DELETE",
+      "url": "http://localhost:3000/api/alumnos/99",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "PARTE 1 - Alumnos Activos con Carrera",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos/activos/con-carrera",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (sin filtros)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos/busqueda-avanzada",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (estado ACTIVO)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos/busqueda-avanzada?estado=ACTIVO",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (por carrera)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos/busqueda-avanzada?carreraId=7",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (por texto)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos/busqueda-avanzada?texto=juan",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (combinada)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos/busqueda-avanzada?carreraId=7&texto=juan&estado=ACTIVO",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "PARTE 3 - Reporte SQL Nativo (Materias por Alumno)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/alumnos/9/reporte-materias",
+      "folder": "Alumnos"
+    },
+    {
+      "name": "Listar Profesores",
+      "method": "GET",
+      "url": "http://localhost:3000/api/profesores?page=1&limit=10",
+      "folder": "Profesores"
+    },
+    {
+      "name": "Crear Profesor",
+      "method": "POST",
+      "url": "http://localhost:3000/api/profesores",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"nombres\": \"Nuevo\",\n  \"apellidos\": \"Profesor\",\n  \"email\": \"nuevo.profesor@uni.edu\",\n  \"telefono\": \"+593999888888\",\n  \"titulo\": \"Magister en Educación\",\n  \"password\": \"profesor123\"\n}",
+        "form": []
+      },
+      "folder": "Profesores"
+    },
+    {
+      "name": "Obtener Profesor por ID",
+      "method": "GET",
+      "url": "http://localhost:3000/api/profesores/10",
+      "folder": "Profesores"
+    },
+    {
+      "name": "Actualizar Profesor",
+      "method": "PATCH",
+      "url": "http://localhost:3000/api/profesores/10",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"telefono\": \"+593999888777\"\n}",
+        "form": []
+      },
+      "folder": "Profesores"
+    },
+    {
+      "name": "Eliminar Profesor",
+      "method": "DELETE",
+      "url": "http://localhost:3000/api/profesores/99",
+      "folder": "Profesores"
+    },
+    {
+      "name": "PARTE 1 - Profesores con Múltiples Asignaturas",
+      "method": "GET",
+      "url": "http://localhost:3000/api/profesores/con-multiples-asignaturas",
+      "folder": "Profesores"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (por texto)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/profesores/busqueda-avanzada?texto=carlos",
+      "folder": "Profesores"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (por título)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/profesores/busqueda-avanzada?titulo=phd",
+      "folder": "Profesores"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (excluir título)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/profesores/busqueda-avanzada?excluirTitulo=licenciado",
+      "folder": "Profesores"
+    },
+    {
+      "name": "PARTE 2 - Búsqueda Avanzada (combinada)",
+      "method": "GET",
+      "url": "http://localhost:3000/api/profesores/busqueda-avanzada?titulo=doctor&excluirTitulo=honoris&texto=carlos",
+      "folder": "Profesores"
+    },
+    {
+      "name": "Listar Matrículas",
+      "method": "GET",
+      "url": "http://localhost:3000/api/matriculas?page=1&limit=10",
+      "folder": "Matrículas"
+    },
+    {
+      "name": "Crear Matrícula (Simple)",
+      "method": "POST",
+      "url": "http://localhost:3000/api/matriculas",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"alumnoId\": 9,\n  \"cursoId\": 13\n}",
+        "form": []
+      },
+      "folder": "Matrículas"
+    },
+    {
+      "name": "Obtener Matrícula por ID",
+      "method": "GET",
+      "url": "http://localhost:3000/api/matriculas/1",
+      "folder": "Matrículas"
+    },
+    {
+      "name": "Eliminar Matrícula",
+      "method": "DELETE",
+      "url": "http://localhost:3000/api/matriculas/99",
+      "folder": "Matrículas"
+    },
+    {
+      "name": "PARTE 1 - Matrículas por Alumno y Período",
+      "method": "GET",
+      "url": "http://localhost:3000/api/matriculas/alumno/9/periodo/2025-1",
+      "folder": "Matrículas"
+    },
+    {
+      "name": "PARTE 4 - Crear Matrícula con Transacción ACID (Exitosa)",
+      "method": "POST",
+      "url": "http://localhost:3000/api/matriculas/crear-con-validacion",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"alumnoId\": 9,\n  \"cursoId\": 15,\n  \"periodo\": \"2025-1\"\n}",
+        "form": []
+      },
+      "folder": "Matrículas"
+    },
+    {
+      "name": "PARTE 4 - Error: Alumno ya matriculado",
+      "method": "POST",
+      "url": "http://localhost:3000/api/matriculas/crear-con-validacion",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"alumnoId\": 9,\n  \"cursoId\": 15,\n  \"periodo\": \"2025-1\"\n}",
+        "form": []
+      },
+      "folder": "Matrículas"
+    },
+    {
+      "name": "PARTE 4 - Error: Sin cupos disponibles",
+      "method": "POST",
+      "url": "http://localhost:3000/api/matriculas/crear-con-validacion",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"alumnoId\": 28,\n  \"cursoId\": 15,\n  \"periodo\": \"2025-1\"\n}",
+        "form": []
+      },
+      "folder": "Matrículas"
+    },
+    {
+      "name": "PARTE 4 - Error: Alumno inactivo",
+      "method": "POST",
+      "url": "http://localhost:3000/api/matriculas/crear-con-validacion",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"alumnoId\": 30,\n  \"cursoId\": 13,\n  \"periodo\": \"2025-1\"\n}",
+        "form": []
+      },
+      "folder": "Matrículas"
+    },
+    {
+      "name": "Listar Cursos",
+      "method": "GET",
+      "url": "http://localhost:3000/api/cursos?page=1&limit=10",
+      "folder": "Cursos"
+    },
+    {
+      "name": "PARTE 1 - Materias por Carrera",
+      "method": "GET",
+      "url": "http://localhost:3000/api/materias/por-carrera/7",
+      "folder": "Materias"
+    },
+    {
+      "name": "Listar Carreras",
+      "method": "GET",
+      "url": "http://localhost:3000/api/carreras",
+      "folder": "Carreras"
+    }
+  ]
+}

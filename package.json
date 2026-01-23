@@ -16,10 +16,16 @@
     "start:dev": "nest start --watch",
     "postinstall": "npm run prisma:generate",
     "lint": "eslint \"src/**/*.ts\" --fix",
+    "prisma:studio:carreras": "prisma studio --config=prisma.carreras.config.ts",
+"prisma:studio:profesores": "prisma studio --config=prisma.profesores.config.ts",
+"prisma:studio:usuarios": "prisma studio --config=prisma.usuarios.config.ts",
     "prisma:generate": "npm run prisma:generate:usuarios && npm run prisma:generate:profesores && npm run prisma:generate:carreras",
     "prisma:generate:usuarios": "prisma generate --config=prisma.usuarios.config.ts",
     "prisma:generate:profesores": "prisma generate --config=prisma.profesores.config.ts",
     "prisma:generate:carreras": "prisma generate --config=prisma.carreras.config.ts",
+    "prisma:migrate:carreras": "prisma migrate dev --config=prisma.carreras.config.ts",
+  "prisma:migrate:profesores": "prisma migrate dev --config=prisma.profesores.config.ts",
+  "prisma:migrate:usuarios": "prisma migrate dev --config=prisma.usuarios.config.ts",
     "seed": "dotenv -e .env -- ts-node prisma/seed.ts"
   },
   "dependencies": {
